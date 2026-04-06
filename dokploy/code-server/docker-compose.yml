@@ -1,0 +1,23 @@
+services:
+  code-server:
+    image: ghcr.io/clankerguru/devcontainer:code-server-latest
+    restart: unless-stopped
+    user: dev
+    ports:
+      - "8443:8443"
+    environment:
+      - TZ=${TZ:-UTC}
+      - PASSWORD=${PASSWORD}
+      - GRADLE_OPTS=-Xmx2g -XX:+UseG1GC
+    volumes:
+      - code-server-data:/home/dev/.local/share/code-server
+      - code-server-workspace:/workspace
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8443/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  code-server-data:
+  code-server-workspace:
