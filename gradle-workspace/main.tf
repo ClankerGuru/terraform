@@ -18,12 +18,15 @@ data "coder_provisioner" "me" {}
 data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 
+# --- Project ---
+
 data "coder_parameter" "repo" {
   name         = "repo"
   display_name = "Repository"
-  description  = "Git repository URL to clone"
+  description  = "Git repository URL to clone into /workspace"
   type         = "string"
   default      = "git@github.com:ClankerGuru/wrkx.git"
+  icon         = "/icon/github.svg"
 }
 
 data "coder_parameter" "branch" {
@@ -32,42 +35,56 @@ data "coder_parameter" "branch" {
   description  = "Branch to checkout after cloning"
   type         = "string"
   default      = "main"
+  icon         = "/icon/git.svg"
 }
+
+# --- AI Agents ---
 
 data "coder_parameter" "agent_claude" {
   name         = "agent_claude"
   display_name = "Claude Code"
-  description  = "Install Claude Code CLI agent"
+  description  = "Install Claude Code CLI"
   type         = "bool"
   default      = true
-  icon         = "/icon/anthropic.svg"
+  icon         = "/icon/claude.svg"
 }
 
 data "coder_parameter" "agent_copilot" {
   name         = "agent_copilot"
   display_name = "GitHub Copilot CLI"
-  description  = "Install GitHub Copilot CLI agent"
+  description  = "Install GitHub Copilot CLI"
   type         = "bool"
   default      = true
-  icon         = "/icon/github.svg"
+  icon         = "/icon/github-copilot.svg"
 }
 
 data "coder_parameter" "agent_codex" {
   name         = "agent_codex"
   display_name = "Codex CLI"
-  description  = "Install OpenAI Codex CLI agent"
+  description  = "Install OpenAI Codex CLI"
   type         = "bool"
   default      = true
-  icon         = "/icon/openai.svg"
+  icon         = "/icon/openai-codex.svg"
 }
 
 data "coder_parameter" "agent_opencode" {
   name         = "agent_opencode"
   display_name = "OpenCode"
-  description  = "Install OpenCode CLI agent"
+  description  = "Install OpenCode CLI"
   type         = "bool"
   default      = true
   icon         = "/icon/terminal.svg"
+}
+
+# --- IDEs ---
+
+data "coder_parameter" "ide_jetbrains" {
+  name         = "ide_jetbrains"
+  display_name = "JetBrains Gateway"
+  description  = "Enable JetBrains IDEs (IntelliJ, GoLand, RustRover, WebStorm)"
+  type         = "bool"
+  default      = true
+  icon         = "/icon/jetbrains.svg"
 }
 
 data "coder_parameter" "ide_vscode_desktop" {
@@ -76,15 +93,19 @@ data "coder_parameter" "ide_vscode_desktop" {
   description  = "Enable VS Code Desktop via Remote SSH"
   type         = "bool"
   default      = false
+  icon         = "/icon/code.svg"
 }
 
 data "coder_parameter" "ide_code_server" {
   name         = "ide_code_server"
-  display_name = "code-server (browser)"
+  display_name = "code-server"
   description  = "Enable code-server (VS Code in the browser)"
   type         = "bool"
   default      = true
+  icon         = "/icon/code.svg"
 }
+
+# --- Agent ---
 
 resource "coder_agent" "main" {
   os             = "linux"
@@ -117,8 +138,10 @@ resource "coder_agent" "main" {
   EOT
 }
 
+# --- IDE Modules ---
+
 module "jetbrains_gateway" {
-  count          = data.coder_workspace.me.start_count
+  count          = data.coder_parameter.ide_jetbrains.value == "true" ? data.coder_workspace.me.start_count : 0
   source         = "registry.coder.com/modules/jetbrains-gateway/coder"
   version        = "1.2.6"
   agent_id       = coder_agent.main.id
@@ -143,6 +166,8 @@ module "code_server" {
   agent_id = coder_agent.main.id
   folder   = "/workspace"
 }
+
+# --- Infrastructure ---
 
 resource "docker_image" "workspace" {
   name = "ghcr.io/clankerguru/devcontainer:gradle-latest"
