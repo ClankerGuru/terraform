@@ -185,4 +185,3 @@ resource "docker_container" "workspace" {
     ip   = "host-gateway"
   }
 }
-}
