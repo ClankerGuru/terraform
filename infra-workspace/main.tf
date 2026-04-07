@@ -18,14 +18,68 @@ data "coder_provisioner" "me" {}
 data "coder_workspace" "me" {}
 data "coder_workspace_owner" "me" {}
 
+# --- AI Agents ---
+
+data "coder_parameter" "agent_claude" {
+  name         = "agent_claude"
+  display_name = "Claude Code"
+  description  = "Install Claude Code CLI"
+  type         = "bool"
+  default      = false
+  icon         = "/icon/claude.svg"
+}
+
+data "coder_parameter" "agent_copilot" {
+  name         = "agent_copilot"
+  display_name = "GitHub Copilot CLI"
+  description  = "Install GitHub Copilot CLI"
+  type         = "bool"
+  default      = false
+  icon         = "/icon/github-copilot.svg"
+}
+
+data "coder_parameter" "agent_codex" {
+  name         = "agent_codex"
+  display_name = "Codex CLI"
+  description  = "Install OpenAI Codex CLI"
+  type         = "bool"
+  default      = false
+  icon         = "/icon/openai-codex.svg"
+}
+
+data "coder_parameter" "agent_opencode" {
+  name         = "agent_opencode"
+  display_name = "OpenCode"
+  description  = "Install OpenCode CLI"
+  type         = "bool"
+  default      = false
+  icon         = "/icon/terminal.svg"
+}
+
+# --- Agent ---
+
 resource "coder_agent" "main" {
   os             = "linux"
   arch           = data.coder_provisioner.me.arch
   dir            = "/workspace"
   startup_script = <<-EOT
-    echo "Infra workspace ready"
+    # Install selected AI agents
+    %{if data.coder_parameter.agent_claude.value == "true"}
+    bun install -g @anthropic-ai/claude-code
+    %{endif}
+    %{if data.coder_parameter.agent_copilot.value == "true"}
+    gh extension install github/gh-copilot
+    %{endif}
+    %{if data.coder_parameter.agent_codex.value == "true"}
+    bun install -g @openai/codex
+    %{endif}
+    %{if data.coder_parameter.agent_opencode.value == "true"}
+    bun install -g opencode-ai
+    %{endif}
   EOT
 }
+
+# --- IDE ---
 
 module "code_server" {
   count    = data.coder_workspace.me.start_count
@@ -34,6 +88,8 @@ module "code_server" {
   agent_id = coder_agent.main.id
   folder   = "/workspace"
 }
+
+# --- Infrastructure ---
 
 resource "docker_image" "workspace" {
   name = "ghcr.io/clankerguru/devcontainer:infra-latest"
@@ -52,14 +108,13 @@ resource "docker_container" "workspace" {
   hostname = data.coder_workspace.me.name
   dns      = ["1.1.1.1"]
 
-  env = [
-    "CODER_AGENT_TOKEN=${coder_agent.main.token}",
-    "GRADLE_OPTS=-Xmx2g -XX:+UseG1GC",
-  ]
-
   networks_advanced {
     name = "clanker-zone-coder-r7qc1n"
   }
+
+  env = [
+    "CODER_AGENT_TOKEN=${coder_agent.main.token}",
+  ]
 
   volumes {
     volume_name    = docker_volume.workspace_data.name
