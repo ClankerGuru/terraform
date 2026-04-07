@@ -25,7 +25,7 @@ data "coder_parameter" "repo" {
   display_name = "Repository"
   description  = "Git repository URL to clone into /workspace"
   type         = "string"
-  default      = "git@github.com:ClankerGuru/wrkx.git"
+  default      = "https://github.com/ClankerGuru/wrkx.git"
   icon         = "/icon/github.svg"
 }
 
