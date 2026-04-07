@@ -83,7 +83,7 @@ data "coder_parameter" "ide_code_server" {
   display_name = "code-server (browser)"
   description  = "Enable code-server (VS Code in the browser)"
   type         = "bool"
-  default      = false
+  default      = true
 }
 
 resource "coder_agent" "main" {

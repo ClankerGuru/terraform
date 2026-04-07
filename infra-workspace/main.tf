@@ -47,14 +47,19 @@ resource "docker_container" "workspace" {
   count      = data.coder_workspace.me.start_count
   name       = "coder-${data.coder_workspace_owner.me.name}-${data.coder_workspace.me.name}"
   image      = docker_image.workspace.image_id
-  entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
+  entrypoint = ["sh", "-c", replace(coder_agent.main.init_script, "https://coder.clanker.zone", "http://coder:7080")]
 
   hostname = data.coder_workspace.me.name
+  dns      = ["1.1.1.1"]
 
   env = [
     "CODER_AGENT_TOKEN=${coder_agent.main.token}",
-    "CODER_AGENT_URL=${data.coder_workspace.me.access_url}",
+    "GRADLE_OPTS=-Xmx2g -XX:+UseG1GC",
   ]
+
+  networks_advanced {
+    name = "clanker-zone-coder-r7qc1n"
+  }
 
   volumes {
     volume_name    = docker_volume.workspace_data.name
