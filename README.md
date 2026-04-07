@@ -1,70 +1,90 @@
 # terraform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](https://opensource.org/licenses/MIT)
+Coder workspace templates and Dokploy compose files.
 
-Coder workspace templates and Dokploy compose files for ClankerGuru infrastructure.
+## Setup
+
+### Coder CLI
+
+```bash
+curl -L https://coder.com/install.sh | sh
+coder login https://your-coder-url.com
+```
+
+### Dokploy CLI
+
+```bash
+npm install -g @dokploy/cli
+dokploy authenticate
+```
+
+---
 
 ## Coder Templates
 
-Templates are pushed to the Coder server via `coder templates push`.
-
-### gradle-workspace
-
-Full-stack development workspace using `ghcr.io/clankerguru/devcontainer:gradle-latest`.
-
-- JVM (Java, Kotlin, Gradle), Go, Rust, Android SDK
-- AI agents: Claude Code, GitHub Copilot CLI, Codex CLI, OpenCode (toggleable)
-- JetBrains IDEs: IntelliJ IDEA Ultimate, GoLand, RustRover, WebStorm
-- Optional: VS Code Desktop, code-server (browser)
+### Push a template
 
 ```bash
 coder templates push gradle-workspace --directory ./gradle-workspace
-```
-
-### infra-workspace
-
-Lightweight infrastructure admin workspace using `ghcr.io/clankerguru/devcontainer:infra-latest`.
-
-- coder, dokploy, hapi CLIs
-- Charm tools (gum, glow, vhs, skate), LazyGit, LazySql
-- code-server for browser access
-
-```bash
 coder templates push infra-workspace --directory ./infra-workspace
 ```
 
+### Create a workspace
+
+```bash
+coder create dev --template gradle-workspace
+```
+
+### Available templates
+
+| Template | Image | Purpose |
+|----------|-------|---------|
+| `gradle-workspace` | `gradle-latest` | Full-stack dev: JVM, Go, Rust, Android SDK, AI agents, JetBrains IDEs |
+| `infra-workspace` | `infra-latest` | Infrastructure admin: coder, dokploy, hapi CLIs, Charm tools |
+
+---
+
 ## Dokploy Compose Files
 
-Docker Compose files for services deployed on Dokploy.
+### Deploy a compose
 
-### dokploy/coder
+In Dokploy UI: create a Compose project, paste the `docker-compose.yml`, set env vars in the Environment tab, deploy.
 
-Coder server with PostgreSQL. Deploy on Dokploy as a Compose project.
+Or via CLI:
 
-**Required environment variables:**
+```bash
+dokploy app deploy
+```
 
-| Variable | Example |
-|----------|---------|
-| `CODER_ACCESS_URL` | `https://coder.yourdomain.com` |
-| `CODER_HTTP_ADDRESS` | `0.0.0.0:7080` |
-| `POSTGRES_DB` | `coder` |
-| `POSTGRES_USER` | `coder` |
-| `POSTGRES_PASSWORD` | (your password) |
+### Available composes
 
-### dokploy/code-server
+| Compose | Path | Required env vars |
+|---------|------|-------------------|
+| Coder server | `dokploy/coder/` | `CODER_ACCESS_URL`, `CODER_HTTP_ADDRESS`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` |
+| code-server | `dokploy/code-server/` | `PASSWORD`, `TZ` |
 
-Standalone code-server (VS Code in browser) using the dev container image. Deploy on Dokploy as a Compose project.
+### Coder env example
 
-**Required environment variables:**
+```
+CODER_ACCESS_URL=https://coder.yourdomain.com
+CODER_HTTP_ADDRESS=0.0.0.0:7080
+POSTGRES_DB=coder
+POSTGRES_USER=coder
+POSTGRES_PASSWORD=changeme
+```
 
-| Variable | Example |
-|----------|---------|
-| `PASSWORD` | (your login password) |
-| `TZ` | `America/Los_Angeles` |
+### code-server env example
 
-**Domain:** Add your domain in Dokploy's Domains tab, port `8443`, HTTPS enabled.
+```
+PASSWORD=changeme
+TZ=America/Los_Angeles
+```
 
-## Repository Structure
+code-server domain: add in Dokploy Domains tab, port `8443`, HTTPS enabled.
+
+---
+
+## Structure
 
 ```text
 terraform/
@@ -73,21 +93,12 @@ terraform/
 ├── infra-workspace/        <- Coder infra workspace template
 │   └── main.tf
 ├── dokploy/
-│   ├── coder/              <- Coder server compose for Dokploy
+│   ├── coder/              <- Coder server + PostgreSQL
 │   │   └── docker-compose.yml
-│   └── code-server/        <- Standalone code-server compose for Dokploy
+│   └── code-server/        <- Standalone browser IDE
 │       └── docker-compose.yml
 └── README.md
 ```
-
-## Updating Templates
-
-1. Edit the `.tf` file
-2. Push to Coder:
-   ```bash
-   coder templates push <name> --directory ./<name>
-   ```
-3. Existing workspaces show an "Update" prompt in the dashboard
 
 ## License
 
