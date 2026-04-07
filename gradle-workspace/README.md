@@ -42,12 +42,12 @@ Rebuilt weekly (Mondays 06:00 UTC) and on every release tag.
 
 Toggle at workspace creation. Installed at runtime via `bun install -g`.
 
-| Agent | Icon | Package | Default |
-|-------|------|---------|---------|
-| Claude Code | ![claude](/icon/claude.svg) | `@anthropic-ai/claude-code` | on |
-| GitHub Copilot CLI | ![copilot](/icon/github-copilot.svg) | `gh copilot` extension | on |
-| Codex CLI | ![codex](/icon/openai-codex.svg) | `@openai/codex` | on |
-| OpenCode | ![opencode](/icon/terminal.svg) | `opencode-ai` | on |
+| Agent | Package | Default |
+|-------|---------|---------|
+| Claude Code | `@anthropic-ai/claude-code` | on |
+| GitHub Copilot CLI | `@github/copilot` | on |
+| Codex CLI | `@openai/codex` | on |
+| OpenCode | `opencode-ai` | on |
 
 ## IDEs (optional)
 

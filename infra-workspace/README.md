@@ -40,12 +40,12 @@ Rebuilt weekly (Mondays 06:00 UTC) and on every release tag.
 
 Toggle at workspace creation. **All default to off** — enable only what you need.
 
-| Agent | Icon | Package | Default |
-|-------|------|---------|---------|
-| Claude Code | ![claude](/icon/claude.svg) | `@anthropic-ai/claude-code` | off |
-| GitHub Copilot CLI | ![copilot](/icon/github-copilot.svg) | `gh copilot` extension | off |
-| Codex CLI | ![codex](/icon/openai-codex.svg) | `@openai/codex` | off |
-| OpenCode | ![opencode](/icon/terminal.svg) | `opencode-ai` | off |
+| Agent | Package | Default |
+|-------|---------|---------|
+| Claude Code | `@anthropic-ai/claude-code` | off |
+| GitHub Copilot CLI | `@github/copilot` | off |
+| Codex CLI | `@openai/codex` | off |
+| OpenCode | `opencode-ai` | off |
 
 ## IDE
 

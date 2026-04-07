@@ -127,7 +127,7 @@ resource "coder_agent" "main" {
     bun install -g @anthropic-ai/claude-code
     %{endif}
     %{if data.coder_parameter.agent_copilot.value == "true"}
-    gh extension install github/gh-copilot
+    bun install -g @github/copilot
     %{endif}
     %{if data.coder_parameter.agent_codex.value == "true"}
     bun install -g @openai/codex
