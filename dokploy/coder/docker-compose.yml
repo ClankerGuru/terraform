@@ -4,7 +4,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
-      - "988"
+      - "${DOCKER_GROUP_ID:-967}"
     depends_on:
       db:
         condition: service_healthy
