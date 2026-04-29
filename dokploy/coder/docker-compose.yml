@@ -4,14 +4,19 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
-      - "988"
+      - "${DOCKER_GROUP_ID:-967}"
     depends_on:
       db:
         condition: service_healthy
     environment:
       CODER_ACCESS_URL: "${CODER_ACCESS_URL}"
       CODER_HTTP_ADDRESS: "${CODER_HTTP_ADDRESS}"
+      CODER_WILDCARD_ACCESS_URL: "${CODER_WILDCARD_ACCESS_URL:-}"
       CODER_PG_CONNECTION_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}?sslmode=disable"
+      CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE: "${CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE:-true}"
+      CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS: "${CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS:-true}"
+      CODER_OAUTH2_GITHUB_ALLOW_EVERYONE: "${CODER_OAUTH2_GITHUB_ALLOW_EVERYONE:-true}"
+      CODER_OAUTH2_GITHUB_DEVICE_FLOW: "${CODER_OAUTH2_GITHUB_DEVICE_FLOW:-true}"
 
   db:
     image: postgres:17
